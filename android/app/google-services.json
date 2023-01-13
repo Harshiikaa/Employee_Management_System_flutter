@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1097124161881",
+    "firebase_url": "https://sunday-management-default-rtdb.firebaseio.com",
+    "project_id": "sunday-management",
+    "storage_bucket": "sunday-management.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1097124161881:android:3c0a33c1b025cb07e2c448",
+        "android_client_info": {
+          "package_name": "com.example.mobile_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1097124161881-3ehp2sjvrnvfbb0kd15ooqlfble58kjf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCufX2RhYaSOFbrX1MEtnBhRjgwx5zCqGw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1097124161881-3ehp2sjvrnvfbb0kd15ooqlfble58kjf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
