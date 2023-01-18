@@ -1,5 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_app/Screens/forgotPassword.dart';
@@ -7,6 +5,9 @@ import 'package:mobile_app/Screens/home_screen.dart';
 import 'package:mobile_app/Screens/registerationScreen.dart';
 import 'package:provider/provider.dart';
 
+import '../services/local_notification.dart';
+import '../viewModel/auth_viewmodel.dart';
+import '../viewModel/global_ui_viewmodel.dart';
 import 'google-Auth/googleAuthentication.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -19,25 +20,55 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   TextEditingController email = new TextEditingController();
   TextEditingController password = new TextEditingController();
-
   bool showPassword = false;
   bool checkedValue = true;
-
   final form = GlobalKey<FormState>();
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  Future<void> login() async {
-    try {
-      final user = (await _auth.signInWithEmailAndPassword(
-              email: email.text, password: password.text))
-          .user;
-      if (user != null) {
-        print("login success");
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(e.toString())));
+  // final FirebaseAuth _auth = FirebaseAuth.instance;
+  void login() async {
+    if (form.currentState == null || !form.currentState!.validate()) {
+      return;
     }
+    _ui.loadState(true);
+    try {
+      await _authViewModel.login(email.text, password.text).then((value) {
+        NotificationService.display(
+          title: "Welcome back",
+          body:
+              "Hello ${_authViewModel.loggedInUser?.fullname},\n Hope you are having a wonderful day.",
+        );
+        Navigator.of(context).pushReplacementNamed('/dashboard');
+      }).catchError((e) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(e.message.toString())));
+      });
+    } catch (err) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(err.toString())));
+    }
+    _ui.loadState(false);
   }
+
+  late GlobalUIViewModel _ui;
+  late AuthViewModel _authViewModel;
+  @override
+  void initState() {
+    _ui = Provider.of<GlobalUIViewModel>(context, listen: false);
+    _authViewModel = Provider.of<AuthViewModel>(context, listen: false);
+    super.initState();
+  }
+  // Future<void> login() async {
+  //   try {
+  //     final user = (await _auth.signInWithEmailAndPassword(
+  //             email: email.text, password: password.text))
+  //         .user;
+  //     if (user != null) {
+  //       print("login success");
+  //     }
+  //   } catch (e) {
+  //     ScaffoldMessenger.of(context)
+  //         .showSnackBar(SnackBar(content: Text(e.toString())));
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -105,14 +136,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       margin: EdgeInsets.all(10),
                       child: TextFormField(
                         controller: email,
-                        validator: (String? value) {
-                          if (value == null || value.isEmpty) {
-                            return "email is required";
-                          } else if (value != "email") {
-                            return "Invalid email";
-                          }
-                          return null;
-                        },
+                        keyboardType: TextInputType.emailAddress,
+                        validator: ValidateLogin.emailValidate,
                         decoration: InputDecoration(
                             filled: true,
                             fillColor: Colors.grey[350],
@@ -128,14 +153,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       margin: EdgeInsets.all(10),
                       child: TextFormField(
                         controller: password,
-                        validator: (String? value) {
-                          if (value == null || value.isEmpty) {
-                            return "password is required";
-                          } else if (value != "password") {
-                            return "Invalid password";
-                          }
-                          return null;
-                        },
+                        validator: ValidateLogin.password,
                         obscureText: showPassword ? false : true,
                         decoration: InputDecoration(
                           filled: true,
@@ -318,7 +336,10 @@ class ValidateLogin {
   static String? password(String? value) {
     if (value == null || value.isEmpty) {
       return "Password is required";
+    } else if (value != "password") {
+      return "Invalid password";
     }
+
     return null;
   }
 }

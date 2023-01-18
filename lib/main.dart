@@ -1,6 +1,14 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:loader_overlay/loader_overlay.dart';
+import 'package:mobile_app/Screens/forgotPassword.dart';
+import 'package:mobile_app/Screens/home_screen.dart';
+import 'package:mobile_app/Screens/registerationScreen.dart';
+import 'package:mobile_app/Screens/widgets/profile_screen.dart';
+import 'package:mobile_app/viewModel/auth_viewmodel.dart';
+import 'package:mobile_app/viewModel/global_ui_viewmodel.dart';
+import 'package:provider/provider.dart';
 
 import 'Screens/loginScreen.dart';
 
@@ -15,20 +23,50 @@ class EmployeeManagementSystem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: "Sunday Management",
-      theme: ThemeData(primarySwatch: Colors.blue),
-      // home: const LoginScreen(),
-      initialRoute: "/login",
-      routes: {
-        "/login": (BuildContext context) => LoginScreen(),
-      },
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => GlobalUIViewModel()),
+        ChangeNotifierProvider(create: (_) => AuthViewModel()),
+        // ChangeNotifierProvider (create: (_) => CategoryViewModel()),
+      ],
+      child: GlobalLoaderOverlay(
+        useDefaultLoading: false,
+        overlayWidget: Center(
+          child: Image.asset(
+            "assets/images/loader.gif",
+            height: 100,
+            width: 100,
+          ),
+        ),
+        child: Consumer<GlobalUIViewModel>(builder: (context, loader, child) {
+          if (loader.isLoading) {
+            context.loaderOverlay.show();
+          } else {
+            context.loaderOverlay.hide();
+          }
+          return MaterialApp(
+            title: "Sunday Management",
+            theme: ThemeData(primarySwatch: Colors.blue),
+            // home: const LoginScreen(),
+            initialRoute: "/login",
+            routes: {
+              "/login": (BuildContext context) => LoginScreen(),
+              "/register": (BuildContext context) => RegistrationScreen(),
+              "/forgotPass": (BuildContext context) => ForgotPassword(),
+              "/dashboard": (BuildContext context) => HomeScreen(),
+              "/profile": (BuildContext context) => ProfileScreen(),
+            },
+          );
+        }),
+      ),
     );
   }
 }
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({Key? key, required this.title}) : super(key: key);
+
+  final String title;
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -36,7 +74,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final form = GlobalKey<FormState>();
-
   int idx = 0;
   List<Widget> home = [
     LoginScreen(),

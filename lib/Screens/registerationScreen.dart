@@ -165,6 +165,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       margin: EdgeInsets.all(10),
                       child: TextFormField(
                         controller: phoneNumber,
+                        validator: ValidateSignup.phone,
+                        keyboardType: TextInputType.phone,
                         decoration: InputDecoration(
                           prefixIcon: Icon(Icons.phone_android),
                           hintText: "Enter your phone number",
@@ -180,16 +182,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       margin: EdgeInsets.all(10),
                       child: TextFormField(
                         controller: createPassword,
-                        validator: (String? value) {
-                          if (value == null || value.isEmpty) {
-                            return "password can't be null";
-                            // } else if (value != "password") {
-                            //   return "Invalid password";
-                          }
-                          return null;
-                        },
-                        // obscureText: true,
                         obscureText: showPassword ? false : true,
+                        validator: (String? value) =>
+                            ValidateSignup.password(value, createPassword),
                         decoration: InputDecoration(
                           prefixIcon: Icon(Icons.lock),
                           hintText: "create a password",
@@ -222,15 +217,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       margin: EdgeInsets.all(10),
                       child: TextFormField(
                         controller: confirmPassword,
-                        validator: (String? value1) {
-                          if (value1 == null || value1.isEmpty) {
-                            return "password is required";
-                          } else if (value1 != createPassword.text) {
-                            return "your password must be same as in create password";
-                          }
-                          return null;
-                        },
-                        // obscureText: true,
+                        validator: (String? value) =>
+                            ValidateSignup.password(value, createPassword),
                         obscureText: showPassword1 ? false : true,
                         decoration: InputDecoration(
                           prefixIcon: Icon(Icons.lock),
@@ -305,6 +293,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           ),
                           recognizer: TapGestureRecognizer()
                             ..onTap = () {
+                              Navigator.of(context).pop();
                               Navigator.of(context).push(
                                 MaterialPageRoute(
                                   builder: (BuildContext context) =>
