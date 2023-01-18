@@ -1,10 +1,13 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:mobile_app/Screens/loginScreen.dart';
+
+import 'Screens/loginScreen.dart';
 
 Future<void> main() async {
-  runApp(const EmployeeManagementSystem());
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(EmployeeManagementSystem());
 }
 
 class EmployeeManagementSystem extends StatelessWidget {
@@ -13,13 +16,13 @@ class EmployeeManagementSystem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: "Sunday Management",
-        theme: ThemeData(primarySwatch: Colors.blue),
-        // home: const LoginScreen(),
-        initialRoute: "/login",
-        routes: {
-          "/login": (BuildContext context) => LoginScreen(),
-        },
+      title: "Sunday Management",
+      theme: ThemeData(primarySwatch: Colors.blue),
+      // home: const LoginScreen(),
+      initialRoute: "/login",
+      routes: {
+        "/login": (BuildContext context) => LoginScreen(),
+      },
     );
   }
 }
